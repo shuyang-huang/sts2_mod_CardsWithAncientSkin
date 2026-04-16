@@ -1,8 +1,8 @@
 {
   "id": "CardsWithAncientSkin",
   "name": "Cards With Ancient Skin",
-  "author": "Codex + shuya",
-  "description": "Turns card visuals into an Ancient-style skin. Current build is a debug skeleton used to verify the mod loader and logging pipeline.",
+  "author": "Shuyang & CodeX",
+  "description": "Turns selected card visuals into an Ancient-style skin.",
   "version": "0.1.0",
   "has_pck": false,
   "has_dll": true,

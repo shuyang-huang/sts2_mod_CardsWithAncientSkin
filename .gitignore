@@ -1,7 +1,8 @@
 bin/
 obj/
-test_output/
 *.log
 *.dll
 *.pdb
 cards_with_ancient_skin.config.json
+test_output/*
+!test_output/run_mod_test_validator.ps1

@@ -13,7 +13,11 @@ internal static class AncientSkinConfig
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
         ?? throw new InvalidOperationException("Could not resolve mod root.");
 
-    private static readonly string ConfigPath = Path.Combine(ModRoot, "card_config.json");
+    private static readonly string[] ConfigPaths =
+    {
+        Path.Combine(ModRoot, "card_config.data"),
+        Path.Combine(ModRoot, "card_config.json")
+    };
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -35,17 +39,28 @@ internal static class AncientSkinConfig
         return _cardFlags.TryGetValue(cardId.ToLowerInvariant(), out var enabled) && enabled;
     }
 
+    public static IReadOnlyList<string> GetEnabledCardIds()
+    {
+        _cardFlags ??= LoadInternal();
+        return _cardFlags
+            .Where(pair => pair.Value)
+            .Select(pair => pair.Key)
+            .OrderBy(key => key, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     private static Dictionary<string, bool> LoadInternal()
     {
         try
         {
-            if (!File.Exists(ConfigPath))
+            var configPath = ConfigPaths.FirstOrDefault(File.Exists);
+            if (configPath == null)
             {
-                Log.Warn("[CardsWithAncientSkin] Config file not found, using default visuals: " + ConfigPath);
+                Log.Warn("[CardsWithAncientSkin] Config file not found, using default visuals.");
                 return new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             }
 
-            var json = File.ReadAllText(ConfigPath);
+            var json = File.ReadAllText(configPath);
             var root = JsonSerializer.Deserialize<AncientSkinConfigRoot>(json, JsonOptions);
             var result = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
@@ -62,7 +77,7 @@ internal static class AncientSkinConfig
                 }
             }
 
-            Log.Info("[CardsWithAncientSkin] Loaded config for " + result.Count + " cards.");
+            Log.Info("[CardsWithAncientSkin] Loaded config from " + configPath + " for " + result.Count + " cards.");
             return result;
         }
         catch (Exception ex)

@@ -1,7 +1,9 @@
 {
   "cards": {
+    "accelerant": true,
     "acrobatics": true,
-    "rolling_boulder": true,
-    "hellraiser": true
+    "adrenaline": true,
+    "afterimage": true,
+    "banshees_cry": true
   }
 }

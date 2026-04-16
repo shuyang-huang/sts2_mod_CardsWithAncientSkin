@@ -8,7 +8,7 @@ namespace CardsWithAncientSkin;
 [ModInitializer(nameof(Initialize))]
 public static class ModEntry
 {
-    private const string HarmonyId = "shuya.CardsWithAncientSkin";
+    private const string HarmonyId = "CardsWithAncientSkin";
     private static bool _initialized;
 
     public static void Initialize()

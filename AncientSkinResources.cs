@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Helpers;
@@ -33,6 +34,21 @@ internal static class AncientSkinResources
     {
         return model.Rarity != CardRarity.Ancient
             && AncientSkinConfig.ShouldApply(model.Id.Entry);
+    }
+
+    public static IReadOnlyCollection<string> GetAvailablePortraitIds()
+    {
+        if (!Directory.Exists(PortraitRoot))
+        {
+            return Array.Empty<string>();
+        }
+
+        return Directory
+            .GetFiles(PortraitRoot, "*.png")
+            .Select(Path.GetFileNameWithoutExtension)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name!.ToLowerInvariant())
+            .ToArray();
     }
 
     public static Texture2D? GetPortraitTexture(CardModel model)

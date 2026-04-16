@@ -17,13 +17,15 @@ if (-not (Test-Path -LiteralPath $builtDll)) {
 New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
 Copy-Item -LiteralPath $builtDll -Destination (Join-Path $targetDir 'CardsWithAncientSkin.dll') -Force
 Copy-Item -LiteralPath $manifest -Destination (Join-Path $targetDir 'CardsWithAncientSkin.json') -Force
+Remove-Item -LiteralPath (Join-Path $targetDir 'card_config.json') -Force -ErrorAction SilentlyContinue
 if (Test-Path -LiteralPath $config) {
-    Copy-Item -LiteralPath $config -Destination (Join-Path $targetDir 'card_config.json') -Force
+    Copy-Item -LiteralPath $config -Destination (Join-Path $targetDir 'card_config.data') -Force
 }
 if (Test-Path -LiteralPath $resourcesDir) {
     $targetResourcesDir = Join-Path $targetDir 'resources'
+    Remove-Item -LiteralPath $targetResourcesDir -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Path $targetResourcesDir -Force | Out-Null
-    Copy-Item -LiteralPath (Join-Path $resourcesDir '*') -Destination $targetResourcesDir -Recurse -Force
+    Copy-Item -Path (Join-Path $resourcesDir '*') -Destination $targetResourcesDir -Recurse -Force
 }
 
 Write-Host "Staged mod to: $targetDir"
