@@ -1,0 +1,7 @@
+bin/
+obj/
+test_output/
+*.log
+*.dll
+*.pdb
+cards_with_ancient_skin.config.json
