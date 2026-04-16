@@ -3,7 +3,7 @@
   "name": "Cards With Ancient Skin",
   "author": "Shuyang & CodeX",
   "description": "Turns selected card visuals into an Ancient-style skin.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "has_pck": false,
   "has_dll": true,
   "dependencies": [],
