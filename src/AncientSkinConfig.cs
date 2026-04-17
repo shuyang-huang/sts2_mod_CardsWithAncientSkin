@@ -15,8 +15,7 @@ internal static class AncientSkinConfig
 
     private static readonly string[] ConfigPaths =
     {
-        Path.Combine(ModRoot, "card_config.data"),
-        Path.Combine(ModRoot, "card_config.json")
+        Path.Combine(ModRoot, "resources", "config", "card_config.data")
     };
 
     private static readonly JsonSerializerOptions JsonOptions = new()

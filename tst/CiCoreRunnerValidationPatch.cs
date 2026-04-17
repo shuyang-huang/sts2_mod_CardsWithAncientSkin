@@ -14,9 +14,24 @@ namespace CardsWithAncientSkin;
 [HarmonyPatch]
 internal static class CiCoreRunnerValidationPatch
 {
+    private static readonly MethodBase? CachedTargetMethod =
+        AccessTools.Method("RiderTestRunner.CiCoreRunner:AddModValidationJobs");
+
+    [HarmonyPrepare]
+    private static bool Prepare()
+    {
+        if (CachedTargetMethod != null)
+        {
+            return true;
+        }
+
+        Log.Info("[CardsWithAncientSkin] Validation patch skipped because RiderTestRunner.CiCoreRunner is not available in this runtime.");
+        return false;
+    }
+
     private static MethodBase? TargetMethod()
     {
-        return AccessTools.Method("RiderTestRunner.CiCoreRunner:AddModValidationJobs");
+        return CachedTargetMethod;
     }
 
     public static bool Prefix(object __instance)

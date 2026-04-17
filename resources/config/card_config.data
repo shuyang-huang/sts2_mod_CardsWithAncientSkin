@@ -1,0 +1,13 @@
+{
+  "cards": {
+    "accelerant": true,
+    "acrobatics": true,
+    "adrenaline": true,
+    "afterimage": true,
+    "banshees_cry": true,
+    "corrosive_wave": true,
+    "echoing_slash": true,
+    "flanking": true,
+    "master_planner": true
+  }
+}

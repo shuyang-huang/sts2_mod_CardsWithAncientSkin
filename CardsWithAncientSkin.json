@@ -1,9 +1,9 @@
 {
   "id": "CardsWithAncientSkin",
   "name": "Cards With Ancient Skin",
-  "author": "Shuyang & CodeX",
+  "author": "Shuyang & Codex",
   "description": "Turns selected card visuals into an Ancient-style skin.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "has_pck": false,
   "has_dll": true,
   "dependencies": [],

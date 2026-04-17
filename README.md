@@ -4,9 +4,9 @@
 This project turns selected cards into an Ancient-style presentation for Slay the Spire 2.
 
 <p align="center">
-  <img src="./sample_generated_card/accelerant_ancient_view.png" alt="Ancient Skin Preview - accelerant" width="30%" />
-  <img src="./sample_generated_card/acrobatics_ancient_view.png" alt="Ancient Skin Preview - acrobatics" width="30%" />
-  <img src="./sample_generated_card/adrenaline_ancient_view.png" alt="Ancient Skin Preview - adrenaline" width="30%" />
+  <img src="./docs/images/accelerant_ancient_view.png" alt="Ancient Skin Preview - accelerant" width="30%" />
+  <img src="./docs/images/acrobatics_ancient_view.png" alt="Ancient Skin Preview - acrobatics" width="30%" />
+  <img src="./docs/images/adrenaline_ancient_view.png" alt="Ancient Skin Preview - adrenaline" width="30%" />
 </p>
 
 ## Overview
@@ -25,19 +25,25 @@ The project hooks into the game's real card rendering flow through Harmony patch
 主要文件分工如下：  
 The main files are organized like this:
 
-- `ModEntry.cs`：Mod 入口，加载配置并注册 patch。
-- `CardVisualHooks.cs`：接入真实 `NCard` 渲染链路。
-- `AncientSkinApplicator.cs`：把目标卡切换成 Ancient 风格显示。
-- `AncientSkinResources.cs`：读取边框、底图和相关资源。
-- `AncientSkinConfig.cs`：读取 `card_config.json`。
-- `CiCoreRunnerValidationPatch.cs`：复用现有验证场景，把资源和配置转成批量渲染任务。
+- `src/ModEntry.cs`：Mod 入口，加载配置并注册 patch。
+- `src/CardVisualHooks.cs`：接入真实 `NCard` 渲染链路。
+- `src/AncientSkinApplicator.cs`：把目标卡切换成 Ancient 风格显示。
+- `src/AncientSkinResources.cs`：读取边框、底图和相关资源。
+- `src/AncientSkinConfig.cs`：读取 `resources/config/card_config.data`。
+- `scripts/stage_mod.ps1`：把构建产物部署到本地 runtime。
+- `tst/CiCoreRunnerValidationPatch.cs`：复用现有验证场景，把资源和配置转成批量渲染任务。
+- `tst/ModTestValidator.cs`：保留测试专用验证节点与实验性测试逻辑。
+- `tst/run_mod_test_validator.ps1`：执行完整的本地验证流程。
 
-- `ModEntry.cs`: mod entry point that loads config and registers patches.
-- `CardVisualHooks.cs`: hooks into the real `NCard` render flow.
-- `AncientSkinApplicator.cs`: applies the Ancient-style state to supported cards.
-- `AncientSkinResources.cs`: loads borders, portraits, and related resources.
-- `AncientSkinConfig.cs`: reads `card_config.json`.
-- `CiCoreRunnerValidationPatch.cs`: reuses the existing validation scene and turns resources plus config into batch render jobs.
+- `src/ModEntry.cs`: mod entry point that loads config and registers patches.
+- `src/CardVisualHooks.cs`: hooks into the real `NCard` render flow.
+- `src/AncientSkinApplicator.cs`: applies the Ancient-style state to supported cards.
+- `src/AncientSkinResources.cs`: loads borders, portraits, and related resources.
+- `src/AncientSkinConfig.cs`: reads `resources/config/card_config.data`.
+- `scripts/stage_mod.ps1`: stages the build output into the local runtime.
+- `tst/CiCoreRunnerValidationPatch.cs`: reuses the existing validation scene and turns resources plus config into batch render jobs.
+- `tst/ModTestValidator.cs`: keeps test-only validator nodes and experimental test logic.
+- `tst/run_mod_test_validator.ps1`: runs the end-to-end local validation flow.
 
 ## Repository Layout
 
@@ -47,6 +53,12 @@ This repository is expected to sit next to `Godot_Card_Render_Setup`, because th
 ```text
 workspace/
   CardsWithAncientSkin/
+    src/
+    tst/
+    scripts/
+    docs/
+    resources/
+    test_output/
   Godot_Card_Render_Setup/
 ```
 
@@ -67,11 +79,11 @@ This script copies the DLL, manifest, config, and resources into the local test 
 它是部署步骤，不是完整的功能验证。  
 It is a staging step, not the full end-to-end validation.
 
-为了避免 STS2 的 mod loader 把配置文件误当成第二个 manifest，脚本会把 `card_config.json` 复制成运行时使用的 `card_config.data`。  
-To avoid STS2 treating the config file as a second manifest, the script stages `card_config.json` as `card_config.data` at runtime.
+配置文件统一放在 `resources/config/card_config.data`，这样目录更规整，也不会被 STS2 的 mod loader 误当成第二个 manifest。  
+The config lives at `resources/config/card_config.data`, which keeps the project structure cleaner and avoids STS2 misreading it as a second manifest.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\stage_mod.ps1 Debug
+powershell -ExecutionPolicy Bypass -File .\scripts\stage_mod.ps1 Debug
 ```
 
 ## Test Flow
@@ -86,7 +98,7 @@ The validator script runs these steps:
 2. 调用 `stage_mod.ps1`。
 3. 启动本地 STS2 runtime。
 4. 读取 `resources/mod_card_portraits_ancient_form`。
-5. 读取 `card_config.json`。
+5. 读取 `resources/config/card_config.data`。
 6. 为启用的卡生成基础卡和升级卡图片。
 7. 把结果输出到 `test_output`。
 
@@ -94,12 +106,12 @@ The validator script runs these steps:
 2. Call `stage_mod.ps1`.
 3. Launch the local STS2 runtime.
 4. Read `resources/mod_card_portraits_ancient_form`.
-5. Read `card_config.json`.
+5. Read `resources/config/card_config.data`.
 6. Render both base and upgraded versions for enabled cards.
 7. Write the outputs into `test_output`.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\test_output\run_mod_test_validator.ps1
+powershell -ExecutionPolicy Bypass -File .\tst\run_mod_test_validator.ps1
 ```
 
 ## Runtime Layout
@@ -111,12 +123,13 @@ The runtime mod folder is expected to look like this:
 CardsWithAncientSkin/
   CardsWithAncientSkin.json
   CardsWithAncientSkin.dll
-  card_config.json
   resources/
+    config/
+      card_config.data
 ```
 
-源码仓库里的配置文件名是 `card_config.json`。  
-In the source repository, the config filename is `card_config.json`.
+源码仓库里的配置文件位于 `resources/config/card_config.data`。  
+In the source repository, the config file lives at `resources/config/card_config.data`.
 
 ## Configuration
 

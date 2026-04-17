@@ -1,20 +1,22 @@
 $ErrorActionPreference = 'Stop'
 
-$validatorDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectRoot = Split-Path -Parent $validatorDir
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$projectRoot = Split-Path -Parent $scriptRoot
 $workspaceRoot = Split-Path -Parent $projectRoot
+$outputDir = Join-Path $projectRoot 'test_output'
 $runtimeExe = Join-Path $workspaceRoot 'Godot_Card_Render_Setup\runtime\SlayTheSpire2.exe'
 $runtimeModDir = Join-Path $workspaceRoot 'Godot_Card_Render_Setup\runtime\mods\CardsWithAncientSkin'
-$logFile = Join-Path $validatorDir 'validator_run.log'
+$logFile = Join-Path $outputDir 'validator_run.log'
 
 Push-Location $projectRoot
 try {
-    Get-ChildItem -Path (Join-Path $validatorDir '*') -File -Include *.png,*.txt,*.log -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -ne 'run_mod_test_validator.ps1' } |
+    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+
+    Get-ChildItem -Path (Join-Path $outputDir '*') -File -Include *.png,*.txt,*.log -ErrorAction SilentlyContinue |
         Remove-Item -Force -ErrorAction SilentlyContinue
 
-    dotnet build .\CardsWithAncientSkin.csproj -c Debug
-    powershell -ExecutionPolicy Bypass -File .\stage_mod.ps1 Debug
+    dotnet build .\CardsWithAncientSkin.csproj -c Debug /p:IncludeTestHooks=true
+    powershell -ExecutionPolicy Bypass -File .\scripts\stage_mod.ps1 Debug
     Remove-Item -LiteralPath (Join-Path $runtimeModDir 'card_config.json') -Force -ErrorAction SilentlyContinue
 
     & $runtimeExe `
